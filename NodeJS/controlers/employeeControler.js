@@ -4,7 +4,7 @@ var ObjectId = require("mongoose").Types.ObjectId;
 
 var { Employee } = require("../models/employee");
 
-// => localhost:3000/employee
+// => localhost:3000/employee/
 router.get("/", (req, res) => {
   Employee.find((err, docs) => {
     if (!err) {
@@ -18,21 +18,16 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  Employee.find((err, docs) => {
-    if (!ObjectId.isValid(req.params.id)) {
-      return this.search
-        .status(400)
-        .send("No record with given id: ${req.params.id}");
+  if (!ObjectId.isValid(req.params.id))
+    return res.status(400).send("No record with given id: ${req.params.id}");
+
+  Employee.findById(req.params.id, (err, doc) => {
+    if (!err) {
+      res.send(doc);
     } else {
-      Employee.findById(req.params.id, (err, doc) => {
-        if (!err) {
-          res.send(doc);
-        } else {
-          console.log(
-            "Error in Retriving Employee" + JSON.stringify(err, undefined, 2)
-          );
-        }
-      });
+      console.log(
+        "Error in Retriving Employee" + JSON.stringify(err, undefined, 2)
+      );
     }
   });
 });
